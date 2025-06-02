@@ -52,37 +52,6 @@ jobs:
             ${{ env.IMAGE_TAG }}
             ghcr.io/ingeniumua/ingeniumuahub-wiki:latest
 
-      - name: Deploy Adminer temporarily
-        if: github.event_name == 'push' && github.ref == 'refs/heads/custom-wiki-js' # Optional: restrict to specific branch
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az containerapp update \
-              --name ${{ vars.AZURE_CONTAINER_APP_NAME }} \
-              --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-              --yaml /dev/stdin <<EOF
-            configuration:
-              ingress:
-                external: true
-                targetPort: 3000
-                traffic:
-                  - latestRevision: true
-                    weight: 100
-              dapr: null
-            template:
-              containers:
-                - name: wiki-app
-                  image: ${{ env.IMAGE_TAG }}
-                - name: adminer-debug  # Temporary Adminer sidecar
-                  image: adminer:latest
-                  env:
-                    - name: ADMINER_DESIGN
-                      value: "pgsql"  # Force PostgreSQL mode
-              revisionSuffix: -with-adminer  # Easily identify debug deployment
-            EOF
-            echo "Adminer deployed temporarily at: https://your-container-app-url--with-adminer--unique-id.example.com"
-
-
       - name: Log in to Azure
         uses: azure/login@v1
         with:
