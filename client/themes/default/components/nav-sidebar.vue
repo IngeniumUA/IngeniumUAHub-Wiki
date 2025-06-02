@@ -9,7 +9,7 @@
         :aria-label='$t(`common:header.home`)'
         )
         v-icon(size='20') mdi-home
-      v-btn.ml-3(
+      v-btn.ml-3(Here
         v-if='currentMode === `custom`'
         depressed
         :color='$vuetify.theme.dark ? `grey darken-4` : `blue darken-2`'
