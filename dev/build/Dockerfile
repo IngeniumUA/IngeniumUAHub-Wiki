@@ -5,7 +5,7 @@ FROM node:20-alpine AS assets
 
 RUN apk add yarn g++ make cmake python3 --no-cache
 
-WORKDIR /ingeniumuahub-wiki
+WORKDIR /wiki
 
 COPY ./client ./client
 COPY ./dev ./dev
@@ -34,7 +34,7 @@ RUN apk add bash curl git openssh gnupg sqlite --no-cache && \
     mkdir -p /wiki/data/content && \
     chown -R node:node /wiki /logs
 
-WORKDIR /ingeniumuahub-wiki
+WORKDIR /wiki
 
 COPY --chown=node:node --from=assets /wiki/assets ./assets
 COPY --chown=node:node --from=assets /wiki/node_modules ./node_modules
