@@ -47,6 +47,7 @@ jobs:
           context: .
           file: dev/build/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ${{ env.IMAGE_TAG }}
             ghcr.io/ingeniumua/ingeniumuahub-wiki:latest
