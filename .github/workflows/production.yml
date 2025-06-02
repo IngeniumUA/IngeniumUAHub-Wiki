@@ -14,6 +14,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Disable DEV Flag + Set Version
+        run: |
+          sudo apt-get install jq -y
+          mv package.json pkg-temp.json
+          jq --arg vs "$REL_VERSION_STRICT" -r '. + {dev:false, version:$vs}' pkg-temp.json > package.json
+          rm pkg-temp.json
+          cat package.json
+
       - name: Set lowercase owner name
         run: |
           echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
@@ -33,6 +41,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
+          context: .
+          file: dev/build/Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE_TAG }}
