@@ -7,17 +7,22 @@ RUN apk add yarn g++ make cmake python3 --no-cache
 
 WORKDIR /wiki
 
-COPY ./client ./client
-COPY ./dev ./dev
-COPY ./patches ./patches
-COPY ./package.json ./package.json
-COPY ./.babelrc ./.babelrc
-COPY ./.eslintignore ./.eslintignore
-COPY ./.eslintrc.yml ./.eslintrc.yml
+# Copy only necessary files for yarn install (to optimize caching)
+COPY package.json yarn.lock ./
 
-RUN yarn cache clean
+# Install dependencies first (cached unless package.json changes)
 RUN yarn --frozen-lockfile --non-interactive
+
+# Now copy the rest of the files
+COPY . .
+
+# Clear old built assets (forces fresh favicon & static files)
+RUN rm -rf ./assets
+
+# Rebuild everything (including favicon)
 RUN yarn build
+
+# Cleanup dev dependencies
 RUN rm -rf /wiki/node_modules
 RUN yarn --production --frozen-lockfile --non-interactive
 RUN yarn patch-package
